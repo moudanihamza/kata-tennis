@@ -1,3 +1,5 @@
+package game;
+
 import domain.game.Game;
 import domain.game.GameScore;
 import exceptions.NoSuchPlayerException;
@@ -26,13 +28,19 @@ public class GameTest {
     }
 
     @Test
-    @Parameters({"ZERO,ZERO,FIFTEEN,ZERO," + PLAYER_ONE,
-            "FIFTEEN,ZERO,FIFTEEN,FIFTEEN," + PLAYER_TWO})
+    @Parameters({"ZERO,ZERO,FIFTEEN,ZERO," + PLAYER_ONE + ",false",
+            "FIFTEEN,ZERO,FIFTEEN,FIFTEEN," + PLAYER_TWO + ",false",
+            "FORTY,FORTY,FORTY,ADVANTAGE," + PLAYER_TWO + ",true",
+            "FORTY,ADVANTAGE,DEUCE,DEUCE," + PLAYER_ONE + ",true",
+            "DEUCE,DEUCE,ADVANTAGE,FORTY," + PLAYER_ONE + ",true"})
     public void should_increment_when_given_player_score(GameScore givenPlayerOne, GameScore givenPlayerTwo, GameScore expectedPlayerOne,
-                                                         GameScore expectedPlayerTwo, String playerName) throws NoSuchPlayerException {
+                                                         GameScore expectedPlayerTwo, String playerName, boolean deuceMode) throws NoSuchPlayerException {
         //GIVEN
+        if (deuceMode) {
+            givenPlayerOne.activateDeuceMode();
+            givenPlayerTwo.activateDeuceMode();
+        }
         setScores(givenPlayerOne, givenPlayerTwo);
-
         //WHEN
         this.game.scores(playerName);
 
@@ -42,7 +50,8 @@ public class GameTest {
     }
 
     @Test
-    @Parameters({"FORTY,FIFTEEN," + PLAYER_ONE})
+    @Parameters({"FORTY,FIFTEEN," + PLAYER_ONE,
+            "ADVANTAGE,FORTY," + PLAYER_ONE})
     public void player_should_be_a_winner_when_his_score_bigger_than_forty(GameScore playerOne, GameScore playerTwo, String playerName) throws NoSuchPlayerException {
         //GIVEN
         setScores(playerOne, playerTwo);
