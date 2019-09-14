@@ -16,32 +16,34 @@ public class Game {
     }
 
     public void scores(String player) throws NoSuchPlayerException {
-        List<GameScore> gameScores = Optional.ofNullable(this.gameScores.get(player))
-                .orElseThrow(NoSuchPlayerException::new);
+        if (Objects.isNull(this.winner)) {
+            List<GameScore> gameScores = Optional.ofNullable(this.gameScores.get(player))
+                    .orElseThrow(NoSuchPlayerException::new);
 
-        if (isGameWinnable(getLastGameScore(gameScores))) {
-            endGame(player);
+            if (isGameWinnable(getLastGameScore(gameScores))) {
+                endGame(player);
 
-        } else if (shouldWeResetScoreToDeuce(player)) {
-            this.gameScores.forEach((k, v) -> {
-                GameScore gameScore = GameScore.DEUCE;
-                gameScore.activateDeuceMode();
-                v.add(gameScore);
-            });
-        } else {
-            gameScores.add(getLastGameScore(gameScores).next());
-            this.gameScores.replace(player, gameScores);
-            if (shouldWeReturnFromDeuceScore()) {
-                this.gameScores.entrySet().stream()
-                        .filter(o -> !o.getKey().equals(player))
-                        .forEach(o -> o.getValue().add(getLastGameScore(o.getValue()).previous()));
+            } else if (shouldWeResetScoreToDeuce(player)) {
+                this.gameScores.forEach((k, v) -> {
+                    GameScore gameScore = GameScore.DEUCE;
+                    gameScore.activateDeuceMode();
+                    v.add(gameScore);
+                });
             } else {
-                this.gameScores.entrySet().stream()
-                        .filter(o -> !o.getKey().equals(player))
-                        .forEach(o -> o.getValue().add(getLastGameScore(o.getValue())));
+                gameScores.add(getLastGameScore(gameScores).next());
+                this.gameScores.replace(player, gameScores);
+                if (shouldWeReturnFromDeuceScore()) {
+                    this.gameScores.entrySet().stream()
+                            .filter(o -> !o.getKey().equals(player))
+                            .forEach(o -> o.getValue().add(getLastGameScore(o.getValue()).previous()));
+                } else {
+                    this.gameScores.entrySet().stream()
+                            .filter(o -> !o.getKey().equals(player))
+                            .forEach(o -> o.getValue().add(getLastGameScore(o.getValue())));
+                }
             }
+            activeDeuceModeIfNecessary();
         }
-        activeDeuceModeIfNecessary();
     }
 
     private boolean shouldWeReturnFromDeuceScore() {
@@ -94,6 +96,10 @@ public class Game {
                         .map(Map.Entry::getValue).flatMap(Collection::stream).collect(Collectors.toList())
         );
         return scorer.equals(GameScore.FORTY) && secondPlayer.equals(GameScore.ADVANTAGE);
+    }
+
+    public  void setPlayerGameScore(String player, List<GameScore> gameScores) {
+        this.gameScores.replace(player, gameScores);
     }
 
 }
