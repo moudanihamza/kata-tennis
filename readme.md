@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/moudanihamza/kata-tennis.svg?branch=master)](https://travis-ci.com/moudanihamza/kata-tennis)
+[![codecov](https://codecov.io/gh/moudanihamza/kata-tennis/branch/master/graphs/badge.svg)](https://codecov.io/gh/moudanihamza/kata-tennis)
+# KATA TENNIS
 SPRINT1 :   Manage a tennis GAME within a set of a tennis match
    
        User Story 1 :
